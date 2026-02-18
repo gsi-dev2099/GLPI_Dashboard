@@ -23,7 +23,7 @@
     <div class="container-fluid px-5 py-4">
         <!-- Audio Element for Notifications -->
         <!-- CAMBIAR 'audio1.mp3' POR EL NOMBRE DE TU ARCHIVO DE AUDIO -->
-        <audio id="new-ticket-sound" src="/static/audio/audio_master.mp3" preload="auto"></audio>
+        <audio id="new-ticket-sound" src="/static/audio/audio2.mp3" preload="auto"></audio>
 
         <!-- Fila 1: Resumen de Estados (Más aire entre cards) -->
         <div id="status-row" hx-get="/api/tickets/stats" hx-trigger="load, every 15s"
@@ -40,7 +40,7 @@
 
             <!-- LEFT COLUMN: INBOX -->
             <div class="col-lg-3 d-flex flex-column" id="inbox-col" hx-get="/api/tickets/inbox"
-                hx-trigger="load, every 5s" hx-swap="innerHTML transition:true">
+                hx-trigger="load, every 15s" hx-swap="innerHTML transition:true">
                 <!-- Initial Loader -->
                 <div class="text-center py-5">
                     <div class="spinner-border text-danger"></div>
@@ -49,7 +49,7 @@
 
             <!-- RIGHT COLUMN: CAROUSEL -->
             <div class="col-lg-9 d-flex flex-column border-start border-light ps-lg-4" id="carousel-col"
-                hx-get="/api/tickets/carousel" hx-trigger="load, every 10s" hx-swap="innerHTML transition:true">
+                hx-get="/api/tickets/carousel" hx-trigger="load, every 30s" hx-swap="innerHTML transition:true">
                 <!-- Initial Loader -->
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary"></div>
