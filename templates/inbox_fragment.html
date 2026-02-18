@@ -17,7 +17,9 @@
 <!-- Scrollable container for Inbox -->
 <div class="inbox-container flex-grow-1 overflow-auto pe-1 custom-scrollbar" style="max-height: calc(100vh - 200px);">
     {% if tickets %}
-    <div class="d-flex flex-column gap-1">
+    {% if tickets %}
+    <!-- Increased gap from 1 to 3 for better separation -->
+    <div class="d-flex flex-column gap-3">
         {% for ticket in tickets %}
         {% set status_class = 'Nuevo' %}
         {% if ticket.minutos_transcurridos >= 10 %}
@@ -25,36 +27,37 @@
         {% elif ticket.minutos_transcurridos >= 5 %}
         {% set status_class = 'Nuevo-warning' %}
         {% endif %}
-        <!-- Ultra Compact Card with Pastel Borders -->
+        <!-- Card: Increased padding (p-2 -> p-3) and font sizing -->
         <div
-            class="glass-card p-2 position-relative border-start border-3 status-{{ status_class }} shadow-sm hover-elevate transition-all {{ 'border-pastel-red' if ticket.minutos_transcurridos >= 10 else 'border-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'border-pastel-green' }}">
+            class="glass-card p-3 position-relative border-start border-3 status-{{ status_class }} shadow-sm hover-elevate transition-all {{ 'border-pastel-red' if ticket.minutos_transcurridos >= 10 else 'border-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'border-pastel-green' }}">
 
-            <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="d-flex justify-content-between align-items-center mb-2">
                 <span
                     class="fw-bold font-monospace {{ 'text-pastel-red' if ticket.minutos_transcurridos >= 10 else 'text-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'text-pastel-green' }}"
-                    style="font-size: 0.65rem;">#{{ ticket.ticket_id }}</span>
+                    style="font-size: 0.85rem;">#{{ ticket.ticket_id }}</span>
                 <!-- Timer restored explicitly -->
-                <span class="badge bg-light text-dark border live-timer py-0 px-1 fw-normal"
-                    data-start="{{ ticket.fecha_iso }}" style="font-size: 0.65rem; font-family: monospace;">
+                <span class="badge bg-light text-dark border live-timer py-1 px-2 fw-normal"
+                    data-start="{{ ticket.fecha_iso }}" style="font-size: 0.8rem; font-family: monospace;">
                     <i class="bi bi-stopwatch me-1"></i>--
                 </span>
             </div>
 
-            <h6 class="fw-bold mb-1 text-truncate-2 lh-1 text-dark-emphasis" title="{{ ticket.titulo }}"
-                style="font-size: 0.8rem;">
+            <!-- Title: Increased font size (0.8rem -> 1rem) -->
+            <h6 class="fw-bold mb-2 text-truncate-2 lh-sm text-dark-emphasis" title="{{ ticket.titulo }}"
+                style="font-size: 1rem;">
                 {{ ticket.titulo }}
             </h6>
 
             <div class="d-flex justify-content-between align-items-end text-muted">
-                <div class="d-flex align-items-center" style="font-size: 0.7rem;">
-                    <i class="bi bi-person-fill me-1 text-secondary" style="font-size: 0.7rem;"></i>
-                    <span class="text-truncate" style="max-width: 100px;">
+                <div class="d-flex align-items-center" style="font-size: 0.85rem;">
+                    <i class="bi bi-person-fill me-1 text-secondary" style="font-size: 0.9rem;"></i>
+                    <span class="text-truncate" style="max-width: 140px;">
                         {{ ticket.solicitante.split(' ')[0] if ticket.solicitante else '--' }}
                     </span>
                 </div>
                 <span
                     class="fw-bold {{ 'text-pastel-red' if ticket.minutos_transcurridos >= 10 else 'text-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'text-pastel-green' }}"
-                    style="font-size: 0.65rem;">
+                    style="font-size: 0.85rem;">
                     {{ ticket.minutos_transcurridos }}m
                 </span>
             </div>
