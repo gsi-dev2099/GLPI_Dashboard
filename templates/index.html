@@ -34,11 +34,11 @@
             </div>
         </div>
 
-        <!-- Fila 2: Split Layout (Inbox Fixed + Carousel) -->
+        <!-- Fila 2: Split Layout (Inbox Fixed + Carousel + Members) -->
         <!-- row-eq-height to ensure both cols stretch -->
         <div class="row g-4 justify-content-center" style="min-height: 600px;">
 
-            <!-- LEFT COLUMN: INBOX -->
+            <!-- LEFT COLUMN: INBOX (3/12) -->
             <div class="col-lg-3 d-flex flex-column" id="inbox-col" hx-get="/api/tickets/inbox"
                 hx-trigger="load, every 15s" hx-swap="innerHTML transition:true">
                 <!-- Initial Loader -->
@@ -47,12 +47,21 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: CAROUSEL -->
-            <div class="col-lg-9 d-flex flex-column border-start border-light ps-lg-4" id="carousel-col"
+            <!-- CENTER COLUMN: CAROUSEL (7/12) -->
+            <div class="col-lg-7 d-flex flex-column border-start border-light ps-lg-4" id="carousel-col"
                 hx-get="/api/tickets/carousel" hx-trigger="load, every 30s" hx-swap="innerHTML transition:true">
                 <!-- Initial Loader -->
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary"></div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: MEMBERS (2/12) -->
+            <div class="col-lg-2 d-flex flex-column border-start border-light ps-lg-3" id="members-col"
+                hx-get="/api/tickets/members" hx-trigger="load, every 60s" hx-swap="innerHTML transition:true">
+                <!-- Initial Loader -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-secondary"></div>
                 </div>
             </div>
         </div>
