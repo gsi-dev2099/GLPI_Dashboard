@@ -224,3 +224,46 @@ async def fetch_carousel_tickets(db: AsyncSession):
     """)
     result = await db.execute(sql)
     return result.mappings().all()
+
+@router.get("/members")
+async def get_members(request: Request, db: AsyncSession = Depends(get_db)):
+    """ 
+    CONSULTA 4: Integrantes Service Desk
+    """
+    try:
+        members = await fetch_members(db)
+        return templates.TemplateResponse("members_fragment.html", {"request": request, "members": members})
+    except Exception as e:
+        print(f"Error in members: {e}")
+        return "" # Fail silently or show nothing if error
+
+async def fetch_members(db: AsyncSession):
+    """
+    4. CONSULTA DE INTEGRANTES
+    Trae técnicos de Service Desk y cuenta sus tickets activos.
+    """
+    sql = text("""
+        SELECT DISTINCT
+            u.id AS user_id,
+            CONCAT(u.realname, ' ', u.firstname) AS nombre_completo,
+            u.name AS usuario,
+            g.name AS grupo,
+            -- Conteo de tickets activos (Ni resueltos ni cerrados)
+            (SELECT COUNT(*) 
+             FROM glpi_tickets_users tu
+             INNER JOIN glpi_tickets t ON tu.tickets_id = t.id
+             WHERE tu.users_id = u.id 
+               AND tu.type = 2 -- Rol de Técnico
+               AND t.is_deleted = 0
+               AND t.status NOT IN (5, 6) -- 5=Resuelto, 6=Cerrado
+            ) AS tickets_activos
+        FROM glpi_users u
+        JOIN glpi_groups_users gu ON gu.users_id = u.id
+        JOIN glpi_groups g ON gu.groups_id = g.id
+        WHERE (g.name LIKE '%Service Desk%' OR g.name LIKE '%Soporte%')
+          AND u.is_deleted = 0 
+          AND u.is_active = 1
+        ORDER BY tickets_activos ASC, u.realname ASC
+    """)
+    result = await db.execute(sql)
+    return result.mappings().all()
