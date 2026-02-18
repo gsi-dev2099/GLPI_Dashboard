@@ -9,17 +9,17 @@
 <div class="d-flex flex-column gap-3 overflow-auto custom-scrollbar pe-1" style="max-height: calc(100vh - 200px);">
     {% for member in members %}
     {% set is_busy = member.tickets_activos >= 1 %}
-    <div class="glass-card p-2 d-flex flex-column align-items-center text-center position-relative transition-all hover-elevate shadow-sm"
-        style="min-height: 120px;">
+    <div class="d-flex flex-column align-items-center text-center position-relative transition-all hover-elevate"
+        style="min-height: auto;">
 
         <!-- Status Indicator Dot -->
         <span
-            class="position-absolute top-0 end-0 mt-2 me-2 p-1 rounded-circle border border-white {{ 'bg-warning' if is_busy else 'bg-success' }}"
-            title="{{ 'Ocupado' if is_busy else 'Disponible' }}">
+            class="position-absolute top-0 end-0 mt-0 me-0 p-1 rounded-circle border border-white {{ 'bg-warning' if is_busy else 'bg-success' }}"
+            title="{{ 'Ocupado' if is_busy else 'Disponible' }}" style="z-index: 10;">
         </span>
 
         <!-- Photo -->
-        <div class="mb-2 position-relative">
+        <div class="mb-1 position-relative">
             {% set photo_url = 'https://nx-ecosystem.com/nexus_photos/' + member.user_id|string + '_rounded.png' %}
 
             {% if member.user_id == 10 %}
@@ -32,24 +32,21 @@
 
             <img src="{{ photo_url }}" alt="{{ member.nombre_completo }}"
                 class="rounded-circle shadow-sm {{ 'grayscale-img' if is_busy else '' }}"
-                style="width: 60px; height: 60px; object-fit: cover; border: 2px solid white;"
+                style="width: 70px; height: 70px; object-fit: cover; border: 2px solid white;"
                 onerror="this.src='https://ui-avatars.com/api/?name={{ member.nombre_completo|urlencode }}&background=random&size=64'">
 
             {% if is_busy %}
             <span
                 class="position-absolute bottom-0 start-50 translate-middle-x badge bg-dark text-white rounded-pill px-2 py-0 border border-white"
-                style="font-size: 0.6rem; transform: translateY(50%) translateX(-50%);">
+                style="font-size: 0.6rem; transform: translateY(50%) translateX(-50%); white-space: nowrap;">
                 {{ member.tickets_activos }} tickets
             </span>
             {% endif %}
         </div>
 
-        <!-- Name -->
-        <h6 class="fw-bold text-dark mb-0 lh-sm text-truncate w-100" style="font-size: 0.8rem;">
+        <!-- Name (Minimal) -->
+        <small class="fw-bold text-dark mb-0 lh-1 text-truncate w-100" style="font-size: 0.7rem;">
             {{ member.nombre_completo.split(' ')[0] }}
-        </h6>
-        <small class="text-muted text-truncate w-100" style="font-size: 0.7rem;">
-            {{ member.nombre_completo.split(' ')[1] if member.nombre_completo.split(' ')|length > 1 else '' }}
         </small>
 
     </div>
