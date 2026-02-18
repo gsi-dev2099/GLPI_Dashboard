@@ -26,38 +26,38 @@
         {% elif ticket.minutos_transcurridos >= 5 %}
         {% set status_class = 'Nuevo-warning' %}
         {% endif %}
-        <!-- Card: p-3, min-height 110px for vertical presence -->
-        <div class="glass-card p-3 position-relative border-start border-3 status-{{ status_class }} shadow-sm hover-elevate transition-all {{ 'border-pastel-red' if ticket.minutos_transcurridos >= 10 else 'border-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'border-pastel-green' }}"
-            style="min-height: 110px; display: flex; flex-direction: column; justify-content: center;">
+        <!-- Card: p-4 for spacious feel, min-height 140px -->
+        <div class="glass-card p-4 position-relative border-start border-3 status-{{ status_class }} shadow-sm hover-elevate transition-all {{ 'border-pastel-red' if ticket.minutos_transcurridos >= 10 else 'border-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'border-pastel-green' }}"
+            style="min-height: 140px; display: flex; flex-direction: column; justify-content: center;">
 
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span
                     class="fw-bold font-monospace {{ 'text-pastel-red' if ticket.minutos_transcurridos >= 10 else 'text-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'text-pastel-green' }}"
-                    style="font-size: 1.1rem;">#{{ ticket.ticket_id }}</span>
+                    style="font-size: 1.2rem;">#{{ ticket.ticket_id }}</span>
 
                 <!-- Timer: Larger -->
-                <span class="badge bg-light text-dark border live-timer py-1 px-2 fw-normal"
-                    data-start="{{ ticket.fecha_iso }}" style="font-size: 0.9rem; font-family: monospace;">
+                <span class="badge bg-light text-dark border live-timer py-2 px-3 fw-normal"
+                    data-start="{{ ticket.fecha_iso }}" style="font-size: 1rem; font-family: monospace;">
                     <i class="bi bi-stopwatch me-1"></i>--
                 </span>
             </div>
 
-            <!-- Title: Larger (1.2rem) -->
-            <h6 class="fw-bold mb-2 text-truncate-2 lh-sm text-dark-emphasis" title="{{ ticket.titulo }}"
-                style="font-size: 1.25rem;">
+            <!-- Title: Much Larger (1.4rem) -->
+            <h6 class="fw-bold mb-3 text-truncate-2 lh-sm text-dark-emphasis" title="{{ ticket.titulo }}"
+                style="font-size: 1.4rem;">
                 {{ ticket.titulo }}
             </h6>
 
             <div class="d-flex justify-content-between align-items-end text-muted mt-auto">
-                <div class="d-flex align-items-center" style="font-size: 1rem;">
-                    <i class="bi bi-person-fill me-1 text-secondary" style="font-size: 1.1rem;"></i>
-                    <span class="text-truncate" style="max-width: 180px;">
+                <div class="d-flex align-items-center" style="font-size: 1.1rem;">
+                    <i class="bi bi-person-fill me-2 text-secondary" style="font-size: 1.3rem;"></i>
+                    <span class="text-truncate" style="max-width: 220px;">
                         {{ ticket.solicitante.split(' ')[0] if ticket.solicitante else '--' }}
                     </span>
                 </div>
                 <span
                     class="fw-bold {{ 'text-pastel-red' if ticket.minutos_transcurridos >= 10 else 'text-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'text-pastel-green' }}"
-                    style="font-size: 1rem;">
+                    style="font-size: 1.2rem;">
                     {{ ticket.minutos_transcurridos }}m
                 </span>
             </div>

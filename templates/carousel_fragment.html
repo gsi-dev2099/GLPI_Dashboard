@@ -20,50 +20,50 @@
     {% for batch in tickets|batch(6) %}
     {% set outer_loop = loop %}
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 align-content-start ticket-page h-100 {% if outer_loop.first %}active{% endif %}"
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 align-content-start ticket-page h-100 {% if outer_loop.first %}active{% endif %}"
         data-page="{{ outer_loop.index }}">
         {% for ticket in batch %}
         {# status class logic #}
         {% set status_class = ticket.estado.replace(' ', '-') %}
         {% if ticket.status_id == 3 %}{% set status_class = 'Planificado' %}{% endif %}
         <div class="col">
-            <!-- Pastel Borders Applied - Taller Cards -->
-            <div class="glass-card h-100 p-3 d-flex flex-column {% if ticket.es_soporte_sd == 1 %}border-start border-3 border-pastel-blue{% else %}border-start border-3 border-pastel-grey opacity-75{% endif %} shadow-sm transition-all"
-                style="min-height: 160px;">
+            <!-- Pastel Borders Applied - Taller Cards (180px) -->
+            <div class="glass-card h-100 p-4 d-flex flex-column {% if ticket.es_soporte_sd == 1 %}border-start border-3 border-pastel-blue{% else %}border-start border-3 border-pastel-grey opacity-75{% endif %} shadow-sm transition-all"
+                style="min-height: 180px;">
 
                 <!-- Header -->
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="d-flex align-items-center gap-1">
                         <span class="badge bg-light text-dark border live-timer py-1 px-2 fw-normal"
-                            data-start="{{ ticket.fecha_iso }}" style="font-size: 0.8rem; font-family: monospace;">
+                            data-start="{{ ticket.fecha_iso }}" style="font-size: 0.9rem; font-family: monospace;">
                             <i class="bi bi-stopwatch"></i> --
                         </span>
                     </div>
-                    <span class="badge status-pill status-{{ status_class }} py-1 px-2 fw-bold text-uppercase"
-                        style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                    <span class="badge status-pill status-{{ status_class }} py-1 px-3 fw-bold text-uppercase"
+                        style="font-size: 0.85rem; letter-spacing: 0.8px;">
                         {{ ticket.estado }}
                     </span>
                 </div>
 
-                <!-- Title (Larger font) -->
-                <h6 class="ticket-card-title mb-2 text-truncate-3 lh-sm text-dark fw-bold" title="{{ ticket.titulo }}"
-                    style="font-size: 1.15rem; flex-grow: 1;">
+                <!-- Title (Much Larger font) -->
+                <h6 class="ticket-card-title mb-3 text-truncate-3 lh-sm text-dark fw-bold" title="{{ ticket.titulo }}"
+                    style="font-size: 1.35rem; flex-grow: 1;">
                     {{ ticket.titulo }}
                 </h6>
 
                 <!-- Footer -->
-                <div class="mt-auto pt-2 border-top border-light-subtle w-100">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="mt-auto pt-3 border-top border-light-subtle w-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="text-muted text-truncate d-flex align-items-center"
-                            style="font-size: 0.85rem; max-width: 45%;">
-                            <i class="bi bi-person me-1"></i>{{ ticket.solicitante.split(',')[0] }}
+                            style="font-size: 1rem; max-width: 45%;">
+                            <i class="bi bi-person me-2"></i>{{ ticket.solicitante.split(',')[0] }}
                         </span>
                         <span class="text-primary fw-bold text-truncate d-flex align-items-center justify-content-end"
-                            style="font-size: 0.85rem; max-width: 50%;">
-                            <i class="bi bi-headset me-1"></i>{{ ticket.tecnico.split(',')[0] or 'N/A' }}
+                            style="font-size: 1rem; max-width: 50%;">
+                            <i class="bi bi-headset me-2"></i>{{ ticket.tecnico.split(',')[0] or 'N/A' }}
                         </span>
                     </div>
-                    <div class="text-end text-muted fst-italic lh-1" style="font-size: 0.75rem;">
+                    <div class="text-end text-muted fst-italic lh-1" style="font-size: 0.85rem;">
                         {{ ticket.fecha_hora }} • #{{ ticket.ticket_id }}
                     </div>
                 </div>
