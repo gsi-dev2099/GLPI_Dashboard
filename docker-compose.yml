@@ -9,8 +9,6 @@ services:
     restart: always
     ports:
       - "8846:8846"
-    volumes:
-      # - ./logs:/app/logs
     environment:
       - TZ=America/Lima
       # Mapeo explícito de variables de Portainer al Contenedor
