@@ -9,17 +9,11 @@
 <div class="d-flex flex-column gap-3 overflow-auto custom-scrollbar pe-1" style="max-height: calc(100vh - 200px);">
     {% for member in members %}
     {% set is_busy = member.tickets_activos >= 1 %}
-    <div class="d-flex flex-column align-items-center text-center position-relative transition-all hover-elevate"
+    <div class="d-flex flex-column align-items-center text-center position-relative transition-all hover-elevate mb-3"
         style="min-height: auto;">
 
-        <!-- Status Indicator Dot -->
-        <span
-            class="position-absolute top-0 end-0 mt-0 me-0 p-1 rounded-circle border border-white {{ 'bg-warning' if is_busy else 'bg-success' }}"
-            title="{{ 'Ocupado' if is_busy else 'Disponible' }}" style="z-index: 10;">
-        </span>
-
-        <!-- Photo -->
-        <div class="mb-1 position-relative">
+        <!-- Photo with Status Border -->
+        <div class="mb-2 position-relative">
             {% set photo_url = 'https://nx-ecosystem.com/nexus_photos/' + member.user_id|string + '_rounded.png' %}
 
             {% if member.user_id == 10 %}
@@ -31,23 +25,23 @@
             {% endif %}
 
             <img src="{{ photo_url }}" alt="{{ member.nombre_completo }}"
-                class="rounded-circle shadow-sm {{ 'grayscale-img' if is_busy else '' }}"
-                style="width: 100px; height: 100px; object-fit: cover; border: 3px solid white;"
+                class="rounded-circle shadow-sm {{ 'grayscale-img' if is_busy else '' }} border border-5 {{ 'border-warning' if is_busy else 'border-success' }}"
+                style="width: 150px; height: 150px; object-fit: cover;"
                 onerror="this.src='https://ui-avatars.com/api/?name={{ member.nombre_completo|urlencode }}&background=random&size=128'">
 
             {% if is_busy %}
             <span
                 class="position-absolute bottom-0 start-50 translate-middle-x badge bg-dark text-white rounded-pill px-3 py-1 border border-white"
-                style="font-size: 0.75rem; transform: translateY(50%) translateX(-50%); white-space: nowrap;">
+                style="font-size: 0.85rem; transform: translateY(50%) translateX(-50%); white-space: nowrap;">
                 {{ member.tickets_activos }} tickets
             </span>
             {% endif %}
         </div>
 
         <!-- Name (Larger) -->
-        <span class="fw-bold text-dark mb-0 lh-1 text-truncate w-100 mt-2" style="font-size: 0.9rem;">
+        <h5 class="fw-bold text-dark mb-0 lh-1 text-truncate w-100 mt-2" style="font-size: 1.1rem;">
             {{ member.nombre_completo.split(' ')[0] }}
-        </span>
+        </h5>
 
     </div>
     {% endfor %}
