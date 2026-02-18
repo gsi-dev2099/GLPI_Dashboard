@@ -1,0 +1,104 @@
+<div class="d-flex align-items-center mb-2 px-1">
+    <h6 class="text-uppercase fw-bold mb-0 tracking-wide text-danger"
+        style="font-size: 0.75rem; letter-spacing: 0.5px;">
+        <i class="bi bi-inbox-fill me-2"></i>Recibidos
+    </h6>
+    <span class="badge bg-danger/10 text-danger border border-danger/20 ms-auto rounded-pill"
+        style="font-size: 0.65rem; padding: 0.25em 0.6em;">{{ tickets|length }}</span>
+</div>
+
+<!-- Metadata for Sound Notification Logic -->
+{% if tickets %}
+<div id="inbox-metadata" data-latest-id="{{ tickets[0].ticket_id }}" style="display:none;"></div>
+{% else %}
+<div id="inbox-metadata" data-latest-id="0" style="display:none;"></div>
+{% endif %}
+
+<!-- Scrollable container for Inbox -->
+<div class="inbox-container flex-grow-1 overflow-auto pe-1 custom-scrollbar" style="max-height: calc(100vh - 200px);">
+    {% if tickets %}
+    <div class="d-flex flex-column gap-1">
+        {% for ticket in tickets %}
+        {% set status_class = 'Nuevo' %}
+        {% if ticket.minutos_transcurridos >= 10 %}
+        {% set status_class = 'Nuevo-alert' %}
+        {% elif ticket.minutos_transcurridos >= 5 %}
+        {% set status_class = 'Nuevo-warning' %}
+        {% endif %}
+        <!-- Ultra Compact Card with Pastel Borders -->
+        <div
+            class="glass-card p-2 position-relative border-start border-3 status-{{ status_class }} shadow-sm hover-elevate transition-all {{ 'border-pastel-red' if ticket.minutos_transcurridos >= 10 else 'border-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'border-pastel-green' }}">
+
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span
+                    class="fw-bold font-monospace {{ 'text-pastel-red' if ticket.minutos_transcurridos >= 10 else 'text-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'text-pastel-green' }}"
+                    style="font-size: 0.65rem;">#{{ ticket.ticket_id }}</span>
+                <!-- Timer restored explicitly -->
+                <span class="badge bg-light text-dark border live-timer py-0 px-1 fw-normal"
+                    data-start="{{ ticket.fecha_iso }}" style="font-size: 0.65rem; font-family: monospace;">
+                    <i class="bi bi-stopwatch me-1"></i>--
+                </span>
+            </div>
+
+            <h6 class="fw-bold mb-1 text-truncate-2 lh-1 text-dark-emphasis" title="{{ ticket.titulo }}"
+                style="font-size: 0.8rem;">
+                {{ ticket.titulo }}
+            </h6>
+
+            <div class="d-flex justify-content-between align-items-end text-muted">
+                <div class="d-flex align-items-center" style="font-size: 0.7rem;">
+                    <i class="bi bi-person-fill me-1 text-secondary" style="font-size: 0.7rem;"></i>
+                    <span class="text-truncate" style="max-width: 100px;">
+                        {{ ticket.solicitante.split(' ')[0] if ticket.solicitante else '--' }}
+                    </span>
+                </div>
+                <span
+                    class="fw-bold {{ 'text-pastel-red' if ticket.minutos_transcurridos >= 10 else 'text-pastel-orange' if ticket.minutos_transcurridos >= 5 else 'text-pastel-green' }}"
+                    style="font-size: 0.65rem;">
+                    {{ ticket.minutos_transcurridos }}m
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center text-muted opacity-50">
+        <i class="bi bi-check2-circle fs-2 mb-1"></i>
+        <p class="small text-uppercase fw-bold" style="font-size: 0.65rem;">Todo al día</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    (function () {
+        if (window.inboxTimerUpdate) window.inboxTimerUpdate();
+    })();
+</script>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.02);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.15);
+        border-radius: 10px;
+    }
+
+    .hover-elevate:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .bg-dark\/10 {
+        background-color: rgba(33, 37, 41, 0.05);
+    }
+
+    .lh-1 {
+        line-height: 1.1;
+    }
+</style>

@@ -1,0 +1,38 @@
+/* Pastel Border Colors */
+.border-pastel-red {
+    border-color: #fca5a5 !important;
+    /* Tailwind Red-300 */
+}
+
+.border-pastel-orange {
+    border-color: #fdba74 !important;
+    /* Tailwind Orange-300 */
+}
+
+.border-pastel-green {
+    border-color: #86efac !important;
+    /* Tailwind Green-300 */
+}
+
+.border-pastel-blue {
+    border-color: #93c5fd !important;
+    /* Tailwind Blue-300 */
+}
+
+.border-pastel-grey {
+    border-color: #cbd5e1 !important;
+    /* Tailwind Slate-300 */
+}
+
+/* Text Colors to match softer tone but remain readable */
+.text-pastel-red {
+    color: #b91c1c !important;
+}
+
+.text-pastel-orange {
+    color: #c2410c !important;
+}
+
+.text-pastel-green {
+    color: #15803d !important;
+}

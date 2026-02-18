@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  glpi_dashboard:
+    container_name: glpi_dashboard_tv
+    # IMPORTANTE: En Portainer, si usas 'Web editor', cambia '.' por la ruta ABSOLUTA
+    # donde subiste los archivos. Ej: /home/tu_usuario/glpi_dashboard
+    build: . 
+    restart: always
+    ports:
+      - "8846:8846"
+    volumes:
+      # Montamos el .env del host para no "quemar" credenciales en la imagen
+      - ./.env:/app/.env
+      # Opcional: Persistir logs si fuera necesario
+      # - ./logs:/app/logs
+    environment:
+      - TZ=America/Lima
+    # Network mode host es opcional si la BD está en el mismo host y queremos acceder via localhost,
+    # pero bridge suele ser mejor. Si la BD está en OTRO servidor, bridge está bien.

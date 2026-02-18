@@ -1,0 +1,264 @@
+:root {
+    --bg-color: #f4f6f5;
+    --card-bg: #ffffff;
+    --dark-element: #0f1217;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-radius-card: 24px;
+    --shadow-marked: 0 15px 40px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 25px 60px rgba(0, 0, 0, 0.18);
+
+    /* GLPI Status Colors - TV Vibrant */
+    --status-Nuevo: #eef2ff;
+    --status-Nuevo-text: #4f46e5;
+    --status-Nuevo-glow: #818cf8;
+    --status-Asignado: #f0fdf4;
+    --status-Asignado-text: #16a34a;
+    --status-Asignado-glow: #4ade80;
+    --status-Planificado: #fefce8;
+    --status-Planificado-text: #ca8a04;
+    --status-Planificado-glow: #facc15;
+    --status-espera: #fff1f2;
+    --status-espera-text: #e11d48;
+    --status-espera-glow: #fb7185;
+    --status-Resuelto: #ecfeff;
+    --status-Resuelto-text: #0891b2;
+    --status-Resuelto-glow: #22d3ee;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.main-container {
+    padding-top: 1.5rem;
+}
+
+.glass-card {
+    background: var(--card-bg);
+    border: 3px solid transparent;
+    border-radius: var(--border-radius-card);
+    box-shadow: var(--shadow-marked);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* TV Highlighting */
+.border-highlight.status-Nuevo {
+    border-color: var(--status-Nuevo-glow);
+    box-shadow: 0 15px 40px rgba(129, 140, 248, 0.12);
+}
+
+.border-highlight.status-Asignado {
+    border-color: var(--status-Asignado-glow);
+    box-shadow: 0 15px 40px rgba(74, 222, 128, 0.12);
+}
+
+.border-highlight.status-Planificado {
+    border-color: var(--status-Planificado-glow);
+    box-shadow: 0 15px 40px rgba(250, 204, 21, 0.12);
+}
+
+.border-highlight.status-espera {
+    border-color: var(--status-espera-glow);
+    box-shadow: 0 15px 40px rgba(251, 113, 133, 0.12);
+}
+
+.border-highlight.status-Resuelto {
+    border-color: var(--status-Resuelto-glow);
+    box-shadow: 0 15px 40px rgba(34, 211, 238, 0.12);
+}
+
+/* Stat Cards (Top Row) */
+.stat-card {
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-width: 3px;
+    min-height: 150px;
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+.stat-number {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: var(--dark-element);
+    margin-bottom: 0.15rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Ticket Work Card */
+.ticket-work-card {
+    position: relative;
+    height: 100%;
+}
+
+.ticket-id-pill {
+    background: #f1f5f9;
+    color: var(--dark-element);
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 0.3rem 0.75rem;
+    border-radius: 99px;
+}
+
+.ticket-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--dark-element);
+    line-height: 1.35;
+    height: 3.4rem;
+    margin: 0.75rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ticket-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    /* Optimized spacing for scanner */
+    margin-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1.2rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.info-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dark-element);
+    text-align: right;
+    max-width: 65%;
+}
+
+/* Status Badges */
+.status-pill {
+    border-radius: 99px;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+/* Urgency Levels for 'Nuevo' */
+/* Base Green (0-5 mins) */
+.status-Nuevo {
+    background: #dcfce7 !important;
+    /* Pastel Green */
+    color: #166534 !important;
+}
+
+.border-highlight.status-Nuevo {
+    border-color: #4ade80 !important;
+    box-shadow: 0 15px 40px rgba(74, 222, 128, 0.15) !important;
+}
+
+/* Warning Orange (5-10 mins) */
+.status-Nuevo-warning {
+    background: #ffedd5 !important;
+    /* Pastel Orange */
+    color: #9a3412 !important;
+}
+
+.border-highlight.status-Nuevo-warning {
+    border-color: #fb923c !important;
+    box-shadow: 0 15px 40px rgba(251, 146, 60, 0.15) !important;
+}
+
+/* Alert Red (>10 mins) */
+.status-Nuevo-alert {
+    background: #fee2e2 !important;
+    /* Pastel Red */
+    color: #991b1b !important;
+}
+
+.border-highlight.status-Nuevo-alert {
+    border-color: #f87171 !important;
+    box-shadow: 0 15px 40px rgba(248, 113, 113, 0.15) !important;
+}
+
+/* Planificado (Dark Pastel Blue) */
+.status-Planificado {
+    background: #e0f2fe !important;
+    /* Light Sky Blue */
+    color: #075985 !important;
+    /* Dark Blue Text */
+}
+
+.border-highlight.status-Planificado {
+    border-color: #38bdf8 !important;
+    /* Sky Blue Border */
+    box-shadow: 0 15px 40px rgba(56, 189, 248, 0.15) !important;
+}
+
+/* Other Statuses (Optimized Pastels) */
+.status-Asignado {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.status-espera {
+    background: #fff1f2;
+    color: #be123c;
+}
+
+.status-Resuelto {
+    background: #ecfeff;
+    color: #0891b2;
+}
+
+/* Animations */
+.animate-fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* HTMX Swap */
+.htmx-swapping>* {
+    opacity: 0;
+    transform: scale(0.97);
+}
+
+.htmx-swap-transition {
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}

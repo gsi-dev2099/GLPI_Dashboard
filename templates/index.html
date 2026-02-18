@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte GLPI - Dashboard Moderno</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/pastel_utils.css">
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid px-5 py-4">
+        <!-- Audio Element for Notifications -->
+        <!-- CAMBIAR 'audio1.mp3' POR EL NOMBRE DE TU ARCHIVO DE AUDIO -->
+        <audio id="new-ticket-sound" src="/static/audio/audio1.mp3" preload="auto"></audio>
+
+        <!-- Fila 1: Resumen de Estados (Más aire entre cards) -->
+        <div id="status-row" hx-get="/api/tickets/stats" hx-trigger="load, every 15s"
+            hx-swap="innerHTML transition:true" class="row gx-5 gy-4 justify-content-center mb-4">
+
+            <div class="col-12 text-center py-5">
+                <div class="spinner-grow text-dark" role="status"></div>
+            </div>
+        </div>
+
+        <!-- Fila 2: Split Layout (Inbox Fixed + Carousel) -->
+        <!-- row-eq-height to ensure both cols stretch -->
+        <div class="row g-4 justify-content-center" style="min-height: 600px;">
+
+            <!-- LEFT COLUMN: INBOX -->
+            <div class="col-lg-3 d-flex flex-column" id="inbox-col" hx-get="/api/tickets/inbox"
+                hx-trigger="load, every 5s" hx-swap="innerHTML transition:true">
+                <!-- Initial Loader -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-danger"></div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: CAROUSEL -->
+            <div class="col-lg-9 d-flex flex-column border-start border-light ps-lg-4" id="carousel-col"
+                hx-get="/api/tickets/carousel" hx-trigger="load, every 10s" hx-swap="innerHTML transition:true">
+                <!-- Initial Loader -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- "Click to Start" Overlay to Unlock Audio Context -->
+        <div id="start-overlay"
+            style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+            <div class="text-center text-white">
+                <i class="bi bi-play-circle-fill text-danger" style="font-size: 4rem;"></i>
+                <h2 class="fw-bold mt-3">Soporte Dashboard</h2>
+                <p class="text-white-50 mb-4">Haz clic para iniciar y habilitar sonidos</p>
+                <button class="btn btn-danger btn-lg px-5 rounded-pill shadow fw-bold" onclick="enableDashboard()">
+                    INICIAR
+                </button>
+            </div>
+        </div>
+
+        <!-- Debug text (Discreet) -->
+        <div id="audio-debug"
+            style="position: fixed; bottom: 5px; left: 5px; z-index: 9999; font-size: 10px; opacity: 0.5; font-family: monospace; color: #888;">
+        </div>
+
+        <script>
+            // AUDIO NOTIFICATION LOGIC
+            let lastKnownTicketId = 0;
+            let isFirstLoad = true;
+            let audioEnabled = false;
+            const debugEl = document.getElementById('audio-debug');
+
+            function updateDebug(msg) {
+                if (debugEl) debugEl.innerText = msg;
+                console.log("[AudioDebug]", msg);
+            }
+
+            // Function call by overlay button
+            function enableDashboard() {
+                const Overlay = document.getElementById('start-overlay');
+                const audio = document.getElementById('new-ticket-sound');
+
+                if (audio) {
+                    // Try to play and immediately pause to unlock logic
+                    audio.volume = 0;
+                    audio.play().then(() => {
+                        audio.pause();
+                        audio.currentTime = 0;
+                        audio.volume = 1; // Restore volume
+                        audioEnabled = true;
+                        updateDebug("Audio Enabled ✅");
+
+                        // Hide overlay with fade
+                        Overlay.style.transition = "opacity 0.5s";
+                        Overlay.style.opacity = "0";
+                        setTimeout(() => Overlay.remove(), 500);
+
+                    }).catch(e => {
+                        alert("Error al habilitar audio: " + e.message);
+                    });
+                }
+            }
+
+            document.body.addEventListener('htmx:afterSwap', function (evt) {
+                // Check if the update was for the inbox
+                if (evt.detail.target.id === 'inbox-col') {
+                    // Look specifically inside the updated content
+                    const metadataDiv = evt.detail.elt.querySelector('#inbox-metadata');
+
+                    if (metadataDiv) {
+                        const currentLatestId = parseInt(metadataDiv.getAttribute('data-latest-id') || "0");
+
+                        // Debug info (optional)
+                        // if(audioEnabled) updateDebug(`Monitoreando... Último ID: ${lastKnownTicketId}`);
+
+                        if (!isFirstLoad && currentLatestId > lastKnownTicketId) {
+                            updateDebug(`🚨 NUEVO TICKET ${currentLatestId}! Reproduciendo...`);
+
+                            if (audioEnabled) {
+                                const audio = document.getElementById('new-ticket-sound');
+                                if (audio) {
+                                    audio.currentTime = 0;
+                                    audio.play().catch(e => updateDebug("Play Error: " + e.message));
+                                }
+                            } else {
+                                updateDebug("Silenciado (Falta interacción)");
+                            }
+                        }
+
+                        // Update state
+                        if (currentLatestId > 0) {
+                            lastKnownTicketId = currentLatestId;
+                        }
+                        isFirstLoad = false;
+                    }
+                }
+            });
+
+            // Shared Timer Logic (Window Global)
+            window.inboxTimerUpdate = function () {
+                const timers = document.querySelectorAll('.live-timer');
+                const now = new Date();
+
+                timers.forEach(timer => {
+                    const startStr = timer.getAttribute('data-start');
+                    if (!startStr) return;
+
+                    const startDate = new Date(startStr);
+                    const diffMs = now - startDate;
+
+                    if (diffMs < 0) {
+                        timer.innerHTML = '<i class="bi bi-stopwatch me-1"></i> 0m';
+                        return;
+                    }
+
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHrs = Math.floor(diffMins / 60);
+                    const diffDays = Math.floor(diffHrs / 24);
+
+                    let text = "";
+                    if (diffDays > 0) {
+                        text = `${diffDays}d ${diffHrs % 24}h ${diffMins % 60}m`;
+                    } else if (diffHrs > 0) {
+                        text = `${diffHrs}h ${diffMins % 60}m`;
+                    } else {
+                        text = `${diffMins}m`;
+                    }
+
+                    timer.innerHTML = `<i class="bi bi-stopwatch me-1"></i> ${text}`;
+                });
+            };
+
+            setInterval(window.inboxTimerUpdate, 60000);
+        </script>
+    </div>
+
+</body>
+
+</html>

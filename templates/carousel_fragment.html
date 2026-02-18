@@ -1,0 +1,164 @@
+<div class="d-flex align-items-center mb-2 px-1">
+    <h6 class="text-uppercase fw-bold mb-0 tracking-wide text-primary"
+        style="font-size: 0.8rem; letter-spacing: 0.5px;">
+        <i class="bi bi-kanban me-2"></i>En Proceso
+    </h6>
+    <span class="badge bg-secondary/10 text-secondary border border-secondary/20 ms-2 rounded-pill"
+        style="font-size: 0.7rem; padding: 0.25em 0.6em;">{{ tickets|length }}</span>
+</div>
+
+<div id="ticket-rotator-container" class="position-relative overflow-hidden flex-grow-1 p-1">
+    {% if tickets %}
+    <!-- 
+           Carousel Batch Size: 6 
+           Changed to 6 to try fitting 2 rows of 3 compact cards.
+           If the user wants "3 en 3" strictly single row, we can revert to batch(3).
+           But "muy largas" (too tall cards) suggests we have vertical space to spare or they look goofy being so tall.
+           Let's try batch(6) with 2 rows.
+           If that's too crowded, the user will say. But "todo mas chico" implies density.
+        -->
+    {% for batch in tickets|batch(6) %}
+    {% set outer_loop = loop %}
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 align-content-start ticket-page h-100 {% if outer_loop.first %}active{% endif %}"
+        data-page="{{ outer_loop.index }}">
+        {% for ticket in batch %}
+        {# status class logic #}
+        {% set status_class = ticket.estado.replace(' ', '-') %}
+        {% if ticket.status_id == 3 %}{% set status_class = 'Planificado' %}{% endif %}
+        <div class="col">
+            <!-- Pastel Borders Applied -->
+            <div class="glass-card h-100 p-2 d-flex flex-column {% if ticket.es_soporte_sd == 1 %}border-start border-3 border-pastel-blue{% else %}border-start border-3 border-pastel-grey opacity-75{% endif %} shadow-sm transition-all"
+                style="min-height: 120px;">
+
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="badge bg-light text-dark border live-timer py-0 px-1 fw-normal"
+                            data-start="{{ ticket.fecha_iso }}" style="font-size: 0.65rem; font-family: monospace;">
+                            <i class="bi bi-stopwatch"></i> --
+                        </span>
+                    </div>
+                    <span class="badge status-pill status-{{ status_class }} py-0 px-2 fw-bold text-uppercase"
+                        style="font-size: 0.6rem; letter-spacing: 0.3px;">
+                        {{ ticket.estado }}
+                    </span>
+                </div>
+
+                <!-- Title (Smaller font) -->
+                <h6 class="ticket-card-title mb-1 text-truncate-2 lh-sm text-dark fw-bold" title="{{ ticket.titulo }}"
+                    style="font-size: 0.9rem; flex-grow: 1;">
+                    {{ ticket.titulo }}
+                </h6>
+
+                <!-- Footer -->
+                <div class="mt-auto pt-2 border-top border-light-subtle w-100">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-muted text-truncate d-flex align-items-center"
+                            style="font-size: 0.7rem; max-width: 45%;">
+                            <i class="bi bi-person me-1"></i>{{ ticket.solicitante.split(',')[0] }}
+                        </span>
+                        <span class="text-primary fw-bold text-truncate d-flex align-items-center justify-content-end"
+                            style="font-size: 0.7rem; max-width: 50%;">
+                            <i class="bi bi-headset me-1"></i>{{ ticket.tecnico.split(',')[0] or 'N/A' }}
+                        </span>
+                    </div>
+                    <div class="text-end text-muted fst-italic lh-1" style="font-size: 0.6rem;">
+                        {{ ticket.fecha_hora }} • #{{ ticket.ticket_id }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div
+        class="h-100 d-flex flex-column justify-content-center align-items-center text-secondary opacity-50 animate-fade-in">
+        <i class="bi bi-cup-hot mb-2" style="font-size: 2rem;"></i>
+        <h5 class="fw-light text-uppercase small" style="letter-spacing: 1px;">Sin tickets activos</h5>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    (function () {
+        if (window.ticketRotationInterval) {
+            clearInterval(window.ticketRotationInterval);
+        }
+
+        const pages = document.querySelectorAll('.ticket-page');
+        if (pages.length > 1) {
+            let currentPageIdx = 0;
+            function showNextPage() {
+                const current = pages[currentPageIdx];
+                currentPageIdx = (currentPageIdx + 1) % pages.length;
+                const next = pages[currentPageIdx];
+
+                if (current && next) {
+                    current.classList.add('fade-out-left');
+                    next.style.display = 'flex';
+                    setTimeout(() => {
+                        current.classList.remove('active', 'fade-out-left');
+                        next.classList.add('active');
+                    }, 600);
+                }
+            }
+            window.ticketRotationInterval = setInterval(showNextPage, 12000);
+        }
+
+        if (window.inboxTimerUpdate) window.inboxTimerUpdate();
+    })();
+</script>
+
+<style>
+    .ticket-page {
+        display: none;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .ticket-page.active {
+        display: flex;
+        position: relative;
+        animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeOutLeft {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+    }
+
+    .fade-out-left {
+        animation: fadeOutLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        position: absolute;
+        width: 100%;
+    }
+
+    /* Compact Gaps */
+    .g-3 {
+        --bs-gutter-y: 0.5rem;
+        --bs-gutter-x: 0.5rem;
+    }
+</style>

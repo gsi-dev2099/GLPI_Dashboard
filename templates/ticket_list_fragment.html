@@ -1,0 +1,264 @@
+<div class="row g-4 h-100">
+    <!-- LEFT COLUMN: INBOX (Fixed, Unassigned, Priority) -->
+    <!-- Col-4 on large screens, Col-12 on small -->
+    <div class="col-lg-3 d-flex flex-column h-100">
+        <div class="d-flex align-items-center mb-2">
+            <h5 class="text-dark-emphasis fw-bold mb-0" style="font-size: 1.4rem;">
+                <i class="bi bi-inbox-fill me-2 text-danger"></i>Recibidos
+            </h5>
+            <span class="badge bg-danger ms-auto rounded-pill">{{ tickets_inbox|length }}</span>
+        </div>
+
+        <!-- Scrollable container for Inbox if too many tickets, but on TV ideally they fit -->
+        <div class="inbox-container flex-grow-1 overflow-auto pe-2" style="max-height: 520px;">
+            {% if tickets_inbox %}
+            {% for ticket in tickets_inbox %}
+            {% set status_class = 'Nuevo' %}
+            {% if ticket.minutos_transcurridos >= 10 %}
+            {% set status_class = 'Nuevo-alert' %}
+            {% elif ticket.minutos_transcurridos >= 5 %}
+            {% set status_class = 'Nuevo-warning' %}
+            {% endif %}
+
+            <!-- Compact Card for Inbox -->
+            <div class="glass-card mb-3 p-3 position-relative border-highlight status-{{ status_class }}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="ticket-id-pill live-timer py-0 px-2 small" data-start="{{ ticket.fecha_iso }}"
+                        style="font-size: 0.85rem;">
+                        <i class="bi bi-stopwatch me-1"></i> --
+                    </span>
+                    <span class="badge status-pill status-{{ status_class }} py-1 px-2 small"
+                        style="font-size: 0.75rem;">
+                        Nuevo
+                    </span>
+                </div>
+
+                <h6 class="fw-bold mb-2 text-truncate-2" title="{{ ticket.titulo }}"
+                    style="font-size: 1rem; line-height: 1.3;">
+                    {{ ticket.titulo }}
+                </h6>
+
+                <div class="d-flex justify-content-between align-items-end text-muted small">
+                    <span><i class="bi bi-person-fill me-1"></i>{{ ticket.solicitante.split(' ')[0] if
+                        ticket.solicitante else '--' }}</span>
+                    <span>{{ ticket.minutos_transcurridos }}m</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="text-center text-muted py-5 opacity-50">
+                <i class="bi bi-check-all fs-1"></i>
+                <p class="small">Todo asignado</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: CAROUSEL (Assigned, Working On) -->
+    <!-- Col-8 on large screens -->
+    <div class="col-lg-9 d-flex flex-column h-100 border-start border-light ps-lg-4">
+        <div class="d-flex align-items-center mb-2">
+            <h5 class="text-dark-emphasis fw-bold mb-0" style="font-size: 1.4rem;">
+                <i class="bi bi-kanban-fill me-2 text-primary"></i>En Proceso
+            </h5>
+            <span class="badge bg-secondary ms-2 rounded-pill opacity-50">{{ tickets_carousel|length }}</span>
+        </div>
+
+        <div id="ticket-rotator-container" class="position-relative overflow-hidden flex-grow-1">
+            {% if tickets_carousel %}
+            {% for batch in tickets_carousel|batch(3) %}
+            {% set outer_loop = loop %}
+
+            <div class="row row-cols-1 row-cols-md-3 g-3 justify-content-center ticket-page {% if outer_loop.first %}active{% endif %}"
+                data-page="{{ outer_loop.index }}">
+                {% for ticket in batch %}
+                {# status class logic #}
+                {% set status_class = ticket.estado.replace(' ', '-') %}
+                {% if ticket.status_id == 3 %}
+                {% set status_class = 'Planificado' %}
+                {% endif %}
+
+                <div class="col">
+                    <!-- Compact Card for Carousel -->
+                    <div
+                        class="glass-card h-100 p-3 d-flex flex-column {% if ticket.es_soporte_sd == 1 %}border-highlight status-{{ status_class }}{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="ticket-id-pill live-timer py-0 px-2 small" data-start="{{ ticket.fecha_iso }}"
+                                style="font-size: 0.85rem;">
+                                <i class="bi bi-stopwatch me-1"></i> --
+                            </span>
+                            <span class="badge status-pill status-{{ status_class }} py-1 px-2 small"
+                                style="font-size: 0.75rem;">
+                                {{ ticket.estado }}
+                            </span>
+                        </div>
+
+                        <h5 class="ticket-card-title mb-2 text-truncate-3" title="{{ ticket.titulo }}"
+                            style="font-size: 1.1rem; flex-grow: 1;">
+                            {{ ticket.titulo }}
+                        </h5>
+
+                        <div class="mt-auto pt-2 border-top border-light-subtle">
+                            <div class="d-flex flex-column gap-1 small">
+                                <div class="text-truncate">
+                                    <i class="bi bi-person-fill me-2 text-secondary"></i>
+                                    <span class="fw-medium">{{ ticket.solicitante or '--' }}</span>
+                                </div>
+                                <div class="text-truncate">
+                                    <i class="bi bi-person-badge-fill me-2 text-secondary"></i>
+                                    <span class="text-primary fw-bold">{{ ticket.tecnico or 'SIN ASIGNAR' }}</span>
+                                </div>
+                                <div class="text-truncate text-muted" style="font-size: 0.75rem;">
+                                    <i class="bi bi-clock-fill me-2"></i>{{ ticket.fecha_hora }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-12 text-center text-secondary py-5 animate-fade-in">
+                <i class="bi bi-cup-hot mb-3 d-block" style="font-size: 3rem; opacity: 0.2;"></i>
+                <h3 class="fw-light">Sin tickets en proceso</h3>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // --- ROTATION LOGIC (Only for Carousel) ---
+        if (window.ticketRotationInterval) {
+            clearInterval(window.ticketRotationInterval);
+        }
+
+        const pages = document.querySelectorAll('.ticket-page');
+        if (pages.length > 1) {
+            let currentPageIdx = 0;
+            function showNextPage() {
+                const current = pages[currentPageIdx];
+                currentPageIdx = (currentPageIdx + 1) % pages.length;
+                const next = pages[currentPageIdx];
+
+                if (current && next) {
+                    current.classList.add('fade-out-left');
+                    setTimeout(() => {
+                        current.classList.remove('active', 'fade-out-left');
+                        next.classList.add('active');
+                    }, 600);
+                }
+            }
+            window.ticketRotationInterval = setInterval(showNextPage, 11000);
+        }
+
+        // --- LIVE TIMER LOGIC ---
+        function updateTimers() {
+            const timers = document.querySelectorAll('.live-timer');
+            const now = new Date();
+
+            timers.forEach(timer => {
+                const startStr = timer.getAttribute('data-start');
+                if (!startStr) return;
+
+                const startDate = new Date(startStr);
+                const diffMs = now - startDate;
+
+                if (diffMs < 0) {
+                    timer.innerHTML = '<i class="bi bi-stopwatch me-1"></i> 0m';
+                    return;
+                }
+
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHrs = Math.floor(diffMins / 60);
+                const diffDays = Math.floor(diffHrs / 24);
+
+                let text = "";
+                if (diffDays > 0) {
+                    text = `${diffDays}d ${diffHrs % 24}h ${diffMins % 60}m`;
+                } else if (diffHrs > 0) {
+                    text = `${diffHrs}h ${diffMins % 60}m`;
+                } else {
+                    text = `${diffMins}m`;
+                }
+
+                timer.innerHTML = `<i class="bi bi-stopwatch me-1"></i> ${text}`;
+            });
+        }
+
+        updateTimers();
+        if (window.timerInterval) clearInterval(window.timerInterval);
+        window.timerInterval = setInterval(updateTimers, 60000);
+    })();
+</script>
+
+<style>
+    /* Styling for Split Layout */
+    .inbox-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .inbox-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .inbox-container::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+    }
+
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .text-truncate-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Carousel Animation */
+    .ticket-page {
+        display: none;
+        width: 100%;
+    }
+
+    .ticket-page.active {
+        display: flex;
+        animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .fade-out-left {
+        animation: fadeOutLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeOutLeft {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+    }
+</style>

@@ -1,0 +1,14 @@
+{% for item in counts %}
+{% set status_class = item.estado.replace(' ', '-') %}
+<div class="col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center animate-fade-in"
+    style="animation-delay: {{ loop.index0 * 0.1 }}s">
+    <div class="glass-card stat-card status-{{ status_class }} bg-white w-100">
+        <div class="stat-number">{{ item.total }}</div>
+        <div class="stat-label">{{ item.estado }}</div>
+    </div>
+</div>
+{% else %}
+<div class="col-12 text-center text-secondary py-5">
+    No se encontraron tickets activos.
+</div>
+{% endfor %}

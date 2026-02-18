@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# Distribution / Metadata
+dist/
+build/
+*.spec
+
+# IDEs
+.vscode/
+.idea/
+
+# System
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
