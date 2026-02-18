@@ -154,6 +154,13 @@ async def fetch_ticket_stats(db: AsyncSession):
             COUNT(id) AS total
         FROM glpi_tickets
         WHERE is_deleted = 0
+          AND (
+            status != 6  -- Para otros estados, cuenta todo
+            OR (
+                status = 6 -- Para Cerrado, solo los de HOY (Zona Horaria -05:00)
+                AND DATE(CONVERT_TZ(closedate, '+00:00', '-05:00')) = DATE(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '-05:00'))
+            )
+          )
         GROUP BY status
         ORDER BY total DESC
     """)
