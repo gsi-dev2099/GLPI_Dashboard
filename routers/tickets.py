@@ -96,8 +96,8 @@ async def get_inbox(request: Request, db: AsyncSession = Depends(get_db)):
     try:
         tickets_inbox = await fetch_inbox_tickets(db)
         
-        # Hash Generation para evitar recargas innecesarias
-        data_string = "".join([f"{t['ticket_id']}-{t['status_id']}" for t in tickets_inbox])
+        # Hash Generation para detectar cambios en estado o umbrales de tiempo (color)
+        data_string = "".join([f"{t['ticket_id']}-{t['status_id']}-{t['minutos_transcurridos']}" for t in tickets_inbox])
         current_hash = hashlib.md5(data_string.encode('utf-8')).hexdigest()
         
         if request.cookies.get("inbox_hash") == current_hash:
@@ -119,7 +119,7 @@ async def get_carousel(request: Request, db: AsyncSession = Depends(get_db)):
         tickets_carousel = await fetch_carousel_tickets(db)
         
         # Hash Generation
-        data_string = "".join([f"{t['ticket_id']}-{t['status_id']}" for t in tickets_carousel])
+        data_string = "".join([f"{t['ticket_id']}-{t['status_id']}-{t['minutos_transcurridos']}" for t in tickets_carousel])
         current_hash = hashlib.md5(data_string.encode('utf-8')).hexdigest()
         
         if request.cookies.get("carousel_hash") == current_hash:
